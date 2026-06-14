@@ -88,7 +88,7 @@ export const onPaymentFailed = inngest.createFunction(
       'If you think this is a mistake or you need a hand, just reply to this email and we will help.',
       '',
       'Thanks,',
-      'The PodEngine team',
+      'The Podpick team',
     ].join('\n');
 
     await step.run('send-dunning', async () =>
@@ -122,7 +122,7 @@ export const onPaymentRecovered = inngest.createFunction(
       '',
       'Thanks for taking care of that. If you have any questions, just reply here.',
       '',
-      'The PodEngine team',
+      'The Podpick team',
     ].join('\n');
 
     await step.run('send-recovered', async () =>

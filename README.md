@@ -1,6 +1,6 @@
 # PodPick v3
 
-Internal app powering **PodEngine** — managed podcast pitching for bootstrapped SaaS founders.
+Internal app powering **Podpick** — managed podcast pitching for bootstrapped SaaS founders.
 
 > **Version:** 3.0 — adds two-step pitch system, full onboarding email automation, send-strategy enforcement, positive-reply lifecycle, ICP-driven defaults.
 
@@ -12,7 +12,7 @@ Internal app powering **PodEngine** — managed podcast pitching for bootstrappe
 - **Agent-first VA workspace** — VAs talk to an AI agent (16 tools) instead of using forms
 - **Two-step pitch system** — Step 1 (episode-based) and Step 2 (host-based) with separate prompts
 - **Background jobs via Inngest** — onboarding emails, send pipeline, weekly planning, monthly recaps
-- **Send from client domain** — Unipile OAuth, never from a PodEngine alias
+- **Send from client domain** — Unipile OAuth, never from a Podpick alias
 - **Framework injection (not fine-tuning)** — admin tunes pitch quality by editing prompts/frameworks live
 
 See `CLAUDE.md` for full project context. See `docs/build-plan-v3.md` for week-by-week build sequence.
@@ -79,7 +79,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 ```
 UNIPILE_API_KEY=...
 UNIPILE_BASE_URL=https://api.unipile.com:9443
-UNIPILE_OAUTH_REDIRECT=https://podengine.com/api/unipile/oauth-callback
+UNIPILE_OAUTH_REDIRECT=https://app.podpick.com/api/unipile/oauth-callback
 ```
 
 ### Rephonic
@@ -90,8 +90,8 @@ REPHONIC_API_KEY=...
 ### Resend (NEW v3)
 ```
 RESEND_API_KEY=re_...
-RESEND_FROM_EMAIL=hi@podengine.com
-ADMIN_NOTIFICATION_EMAIL=hi@podengine.com
+RESEND_FROM_EMAIL=hi@podpick.com
+ADMIN_NOTIFICATION_EMAIL=hi@podpick.com
 ```
 
 ### Inngest (NEW v3)
@@ -109,7 +109,7 @@ PRO_QUOTA=25
 ### App
 ```
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_SITE_NAME=PodEngine
+NEXT_PUBLIC_SITE_NAME=Podpick
 ```
 
 ---
@@ -154,12 +154,12 @@ podpick-app-v3/
     ├── build-plan-v3.md
     ├── agent-tool-catalog-v3.md
     ├── week1-cursor-prompts-v3.md
-    ├── podengine-icp-analysis.md
-    ├── podengine-pitch-templates.md
-    ├── podengine-onboarding-emails.md
-    ├── podengine-send-strategy.md
-    ├── podengine-one-pager.md
-    ├── podengine-va-runbook.md
+    ├── Podpick-icp-analysis.md
+    ├── Podpick-pitch-templates.md
+    ├── Podpick-onboarding-emails.md
+    ├── Podpick-send-strategy.md
+    ├── Podpick-one-pager.md
+    ├── Podpick-va-runbook.md
     └── podpick-reply-subsequences.md
 ```
 
@@ -258,7 +258,7 @@ These are intentional MVP exclusions, documented in `docs/build-plan-v3.md` sect
 ## Support
 
 For project-specific questions or design decisions, check the docs first:
-- Behavioral question (cadence, copy, intake) → `docs/podengine-*.md`
+- Behavioral question (cadence, copy, intake) → `docs/Podpick-*.md`
 - Architecture question → `docs/build-plan-v3.md`
 - Agent capability question → `docs/agent-tool-catalog-v3.md`
-- ICP / positioning question → `docs/podengine-icp-analysis.md`
+- ICP / positioning question → `docs/Podpick-icp-analysis.md`

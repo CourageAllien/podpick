@@ -158,7 +158,7 @@ export async function forwardPositiveReplyToClient(
   if (!user?.email) return { error: 'Client has no email on file.' };
 
   const firstName = (user.fullName ?? '').split(' ')[0] || 'there';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://podengine.com';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.podpick.com';
 
   const emailBody = `Hi ${firstName},
 
@@ -178,7 +178,7 @@ Review, edit, and send it here:
 ${appUrl}/app/leads/${lifecycle.id}
 
 Thanks,
-The PodEngine team`;
+The Podpick team`;
 
   const sent = await sendTransactionalEmail({
     to: user.email,

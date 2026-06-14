@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: process.env.NEXT_PUBLIC_SITE_NAME || 'PodEngine',
+  title: process.env.NEXT_PUBLIC_SITE_NAME || 'Podpick',
   description:
     process.env.NEXT_PUBLIC_BRAND_TAGLINE ||
     'Hand-written podcast pitches for bootstrapped SaaS founders',

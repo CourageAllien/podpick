@@ -6,13 +6,13 @@ This file is read by Cursor agents on every session. Keep it accurate and concis
 
 ## What we're building
 
-**PodPick** (internal app name) powers **PodEngine** (customer-facing brand) — a managed podcast pitching service. Three audiences use the app:
+**PodPick** (internal app name) powers **Podpick** (customer-facing brand) — a managed podcast pitching service. Three audiences use the app:
 
 1. **Clients** — pay $99-199/mo, see read-only dashboards
 2. **VAs (operators)** — chat with an AI agent to research, write, and queue pitches
 3. **Admins** — configure AI training data, view metrics, assign VAs to clients
 
-The product sends pitches **from the client's own Gmail/Outlook** via Unipile OAuth — never from a PodEngine domain.
+The product sends pitches **from the client's own Gmail/Outlook** via Unipile OAuth — never from a Podpick domain.
 
 ---
 
@@ -22,7 +22,7 @@ The product sends pitches **from the client's own Gmail/Outlook** via Unipile OA
 - **Primary ICP:** Bootstrapped SaaS founders, $300K-$2M ARR, US/UK/CA/AU
 - **Agent-driven VA workspace:** the agent IS the primary interface for VAs (not traditional forms/CRUD UI)
 - **VA approval gate:** all pitches require VA approval before sending — no autonomous sends
-- **Send from client domain:** Unipile OAuth, never a PodEngine alias
+- **Send from client domain:** Unipile OAuth, never a Podpick alias
 - **Two-step pitch system:** Step 1 (episode-based) + Step 2 (host-based)
 - **Send strategy:** Tue/Wed/Thu only, 9am-2pm host-local, 45-90 sec jitter
 - **Cadence:** Standard 3-3-2-2 across 4 weeks of period; Pro 7-7-6-5
@@ -60,7 +60,7 @@ The product sends pitches **from the client's own Gmail/Outlook** via Unipile OA
 
 ### Three apps under one Next.js project
 
-- `/(public)` — marketing site at `podengine.com`, plus public media pages at `/m/[slug]`
+- `/(public)` — marketing site at `podpick.com`, plus public media pages at `/m/[slug]`
 - `/(client)/app/*` — client dashboard (read-only, Instantly-style)
 - `/(va)/va/*` — VA workspace (chat-first interface)
 - `/(admin)/admin/*` — admin control room
@@ -187,7 +187,7 @@ Idempotent via `onboarding_email_sends` unique constraint on (client, template).
 
 ## Design system
 
-**Marketing (PodEngine) + Client dashboard + Public media pages:**
+**Marketing (Podpick) + Client dashboard + Public media pages:**
 - Cream/terracotta palette
 - DM Serif Display + DM Sans (Hanken Grotesk variant acceptable)
 - JetBrains Mono for code blocks
@@ -241,12 +241,12 @@ In a build context, this means: when iterating in Cursor, prefer creating new fi
 - `build-plan-v3.md` — week-by-week build sequence (10 weeks)
 - `agent-tool-catalog-v3.md` — all 16 agent tools with schemas + guardrails
 - `week1-cursor-prompts-v3.md` — Cursor Composer prompts for week 1
-- `podengine-icp-analysis.md` — who PodEngine serves
-- `podengine-pitch-templates.md` — the 2-step pitch framework + examples
-- `podengine-onboarding-emails.md` — full content of 9-email sequence
-- `podengine-send-strategy.md` — cadence, timing, jitter, warmup
-- `podengine-one-pager.md` — positive-reply response flow
-- `podengine-va-runbook.md` — VA day-to-day operations
+- `Podpick-icp-analysis.md` — who Podpick serves
+- `Podpick-pitch-templates.md` — the 2-step pitch framework + examples
+- `Podpick-onboarding-emails.md` — full content of 9-email sequence
+- `Podpick-send-strategy.md` — cadence, timing, jitter, warmup
+- `Podpick-one-pager.md` — positive-reply response flow
+- `Podpick-va-runbook.md` — VA day-to-day operations
 
 When in doubt about implementation detail, check these docs before improvising.
 

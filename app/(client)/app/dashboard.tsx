@@ -75,7 +75,7 @@ export function Dashboard(props: {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <div className="font-serif text-xl">PodEngine</div>
+          <div className="font-serif text-xl">Podpick</div>
           <form action="/auth/signout" method="post">
             <Button variant="ghost" size="sm" type="submit">
               Sign out

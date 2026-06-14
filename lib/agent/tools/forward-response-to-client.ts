@@ -67,7 +67,7 @@ ${(response.body ?? '').slice(0, 1500)}
 ${input.note ? `\nNote from your team: ${input.note}\n` : ''}
 You can reply directly from your own inbox if you'd like to respond.
 
-— PodEngine`;
+— Podpick`;
 
     const sent = await sendTransactionalEmail({
       to: user.email,

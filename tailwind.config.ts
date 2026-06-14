@@ -15,7 +15,7 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // PodEngine brand palette
+        // Podpick brand palette
         cream: '#FAF6F0',
         terracotta: {
           DEFAULT: '#C76F4E',

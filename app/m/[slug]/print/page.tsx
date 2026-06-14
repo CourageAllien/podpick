@@ -124,7 +124,7 @@ export default async function MediaPrintPage({ params }: { params: Promise<{ slu
             className="body"
             style={{ marginTop: 48, borderTop: '1px solid #d6d3d1', paddingTop: 16, fontSize: 11, color: '#78716c', textAlign: 'center' }}
           >
-            podengine.com
+            podpick.com
           </footer>
         </div>
     </div>
