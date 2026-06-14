@@ -140,7 +140,7 @@ function buildEmailContent(
       };
     case 'intake_nudge':
       return {
-        subject: `Quick check — did the intake link land?`,
+        subject: `Quick check: did the intake link land?`,
         body: INTAKE_NUDGE_BODY(v),
       };
     case 'intake_reminder':
@@ -165,7 +165,7 @@ function buildEmailContent(
       };
     case 'trial_converting_tomorrow':
       return {
-        subject: `Heads up — your trial converts tomorrow`,
+        subject: `Heads up: your trial converts tomorrow`,
         body: TRIAL_CONVERTING_BODY(v),
       };
     case 'welcome_paid':
@@ -221,7 +221,7 @@ We've already pre-assigned your VA based on your ${v.tier} tier. They'll introdu
 
 If anything's unclear, hit reply. We answer every email within 24 hours.
 
-— Courage
+Courage
 Founder, PodEngine`;
 
 const INTAKE_NUDGE_BODY = (v: any) => `Hi ${v.name},
@@ -232,7 +232,7 @@ Just checking the intake link didn't get filtered out:
 
 It takes about 10 minutes. The faster we have your story, the sooner your first pitches go out.
 
-— Courage`;
+Courage`;
 
 const INTAKE_REMINDER_BODY = (v: any) => `Hi ${v.name},
 
@@ -250,7 +250,7 @@ Without the intake, we can't start. The form covers:
 
 Your trial ends ${v.trialEndDate}. Time matters here.
 
-— Courage`;
+Courage`;
 
 const RESEARCHING_BODY = (v: any) => `Hi ${v.name},
 
@@ -268,7 +268,7 @@ Meanwhile, your dashboard is live:
 
 You can message ${v.vaFirstName} directly from there if anything comes up.
 
-— ${v.vaFirstName}
+${v.vaFirstName}
 PodEngine`;
 
 const FIRST_PITCHES_SENT_BODY = (v: any) => `Hi ${v.name},
@@ -285,21 +285,21 @@ Your dashboard shows the full pitch copy plus the rest of this week's queue:
 
 Two more pitches go out by end of week. We'll keep going through your trial.
 
-— ${v.vaFirstName}`;
+${v.vaFirstName}`;
 
 const MID_TRIAL_CHECKIN_BODY = (v: any) => `Hi ${v.name},
 
 You're halfway through your trial. Quick check-in:
 
-By now you've seen the pitches we sent on your behalf. Maybe a host has replied. Maybe not yet — replies often take 5-10 days for the ones that land.
+By now you've seen the pitches we sent on your behalf. Maybe a host has replied. Maybe not yet. Replies often take 5-10 days for the ones that land.
 
 If anything's surprised you (positive or negative), I want to know. Reply to this email and I'll read it.
 
-In three days, your trial converts to ${v.tier} at $${v.price}/mo. Nothing for you to do — it happens automatically. If you want to pause, upgrade to Pro, or cancel, you can do it from the dashboard:
+In three days, your trial converts to ${v.tier} at $${v.price}/mo. Nothing for you to do. It happens automatically. If you want to pause, upgrade to Pro, or cancel, you can do it from the dashboard:
 
 → ${v.dashboardUrl}
 
-— ${v.vaFirstName}`;
+${v.vaFirstName}`;
 
 const TRIAL_CONVERTING_BODY = (v: any) => `Hi ${v.name},
 
@@ -318,7 +318,7 @@ If you want to change tiers, pause, or cancel before the charge, visit your bill
 
 No action needed if you want to continue.
 
-— ${v.vaFirstName}`;
+${v.vaFirstName}`;
 
 const WELCOME_PAID_BODY = (v: any) => `Hi ${v.name},
 
@@ -326,7 +326,7 @@ Your subscription just renewed. Welcome to PodEngine proper.
 
 Here's what to expect:
 
-- ${v.quota} pitches per month, sent steadily over 3-4 weeks (not in one burst — better deliverability that way)
+- ${v.quota} pitches per month, sent steadily over 3-4 weeks (not in one burst, which protects deliverability)
 - Quota resets on ${v.nextRenewalDate || '[next renewal]'}
 - Pause anytime if you're traveling, launching, or just need a break
 - Your VA ${v.vaFirstName} keeps researching and pitching while you focus on your work
@@ -337,7 +337,7 @@ Your dashboard shows everything in real-time:
 
 If you want to dial something in (new angles, different podcast genres, target audience tweak), message ${v.vaFirstName} directly from the dashboard. They check in throughout the day.
 
-— ${v.vaFirstName}`;
+${v.vaFirstName}`;
 
 const TRIAL_ENDED_BODY = (v: any) => `Hi ${v.name},
 
@@ -355,9 +355,9 @@ The pitches we drafted are still in your dashboard. If you want to keep them as 
 
 We won't bug you with sales emails. If anything changes for you, the door is open. Same trial pricing whenever you want to try again.
 
-If you have 30 seconds, I'd love to know what didn't work. Reply to this email — even one sentence helps.
+If you have 30 seconds, I'd love to know what didn't work. Reply to this email. Even one sentence helps.
 
-— Courage`;
+Courage`;
 
 const FIRST_MONTH_BODY = (v: any) => `Hi ${v.name},
 
@@ -374,7 +374,7 @@ If you want to refine direction (new angles, different niches, adjustments to wh
 
 → ${v.dashboardUrl}
 
-— ${v.vaFirstName}`;
+${v.vaFirstName}`;
 
 const WINBACK_30_BODY = (v: any) => `Hi ${v.name},
 
@@ -386,7 +386,7 @@ It's been a month since you stepped away from PodEngine. Two things worth knowin
 
 If timing's right to restart, the same $15 trial pricing applies. Just reply with "restart" and we'll spin it back up.
 
-— Courage`;
+Courage`;
 
 const WINBACK_60_BODY = (v: any) => `Hi ${v.name},
 
@@ -402,7 +402,7 @@ If you want to tell me which, reply with one word. I read every response persona
 
 If you ever want to come back, the door's open at the same trial price.
 
-— Courage`;
+Courage`;
 
 const WINBACK_90_BODY = (v: any) => `Hi ${v.name},
 
@@ -413,7 +413,7 @@ If PodEngine ever fits your roadmap again, here's the trial link:
 
 Thanks for trying us out the first time.
 
-— Courage`;
+Courage`;
 
 // ───────────────────────────────────────────────────────────────
 // HELPERS

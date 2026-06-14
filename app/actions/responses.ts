@@ -177,7 +177,8 @@ ${vaNote ? `\nNote from your team: ${vaNote}\n` : ''}
 Review, edit, and send it here:
 ${appUrl}/app/leads/${lifecycle.id}
 
-— PodEngine`;
+Thanks,
+The PodEngine team`;
 
   const sent = await sendTransactionalEmail({
     to: user.email,

@@ -23,7 +23,7 @@ export async function generateMetadata({
   if (!data) return { title: 'Not found' };
   const name = data.user?.fullName || data.profile.company || 'Guest';
   return {
-    title: `${name} — Podcast guest`,
+    title: `${name} | Podcast guest`,
     description: data.profile.oneLineBio || undefined,
   };
 }
@@ -114,7 +114,7 @@ export default async function MediaPage({ params }: { params: Promise<{ slug: st
                   ) : (
                     a.podcastName
                   )}
-                  {a.date && <span className="text-stone-400"> — {a.date}</span>}
+                  {a.date && <span className="text-stone-400"> · {a.date}</span>}
                 </li>
               ))}
             </ul>

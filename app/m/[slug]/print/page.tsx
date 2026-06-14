@@ -112,7 +112,7 @@ export default async function MediaPrintPage({ params }: { params: Promise<{ slu
                 {appearances.map((a, i) => (
                   <li key={i}>
                     {a.podcastName}
-                    {a.episodeUrl ? ` — ${a.episodeUrl}` : ''}
+                    {a.episodeUrl ? ` · ${a.episodeUrl}` : ''}
                     {a.date ? ` (${a.date})` : ''}
                   </li>
                 ))}
