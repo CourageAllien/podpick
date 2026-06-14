@@ -46,7 +46,7 @@ export function CreateVaForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="jordan@podpick.com"
+          placeholder="jordan@usepodpick.com"
         />
       </div>
       <Button type="submit" className="w-full" disabled={isPending}>

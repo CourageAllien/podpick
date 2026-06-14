@@ -42,14 +42,14 @@ ANTHROPIC_API_KEY=""                  # sk-ant-...
 # --- Unipile (client inbox send/receive) ---
 UNIPILE_API_KEY=""
 UNIPILE_BASE_URL="https://api.unipile.com:9443"
-UNIPILE_OAUTH_REDIRECT=""             # https://app.podpick.com/api/unipile/oauth-callback
+UNIPILE_OAUTH_REDIRECT=""             # https://usepodpick.com/api/unipile/oauth-callback
 
 # --- Rephonic (podcast discovery) ---
 REPHONIC_API_KEY=""
 
 # --- Resend (email) ---
 RESEND_API_KEY=""                     # re_...
-RESEND_FROM_EMAIL=""                  # hi@podpick.com (verified domain)
+RESEND_FROM_EMAIL=""                  # hi@usepodpick.com (verified domain)
 ADMIN_NOTIFICATION_EMAIL=""           # where ops alerts land
 
 # --- Inngest (background jobs) ---
@@ -61,7 +61,7 @@ STANDARD_QUOTA="10"
 PRO_QUOTA="25"
 
 # --- App config ---
-NEXT_PUBLIC_APP_URL="https://app.podpick.com"   # the app's subdomain (NOT localhost)
+NEXT_PUBLIC_APP_URL="https://usepodpick.com"   # the production domain (NOT localhost)
 NEXT_PUBLIC_SITE_NAME="Podpick"
 NEXT_PUBLIC_BRAND_TAGLINE="Hand-written podcast pitches for bootstrapped SaaS founders"
 

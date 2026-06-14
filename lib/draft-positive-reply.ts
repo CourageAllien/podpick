@@ -57,7 +57,7 @@ export async function buildPositiveReplyDraft(input: {
   const user = await db.query.users.findFirst({ where: eq(users.id, client.userId) });
 
   const clientFirstName = (user?.fullName ?? '').split(' ')[0] || client.company || 'there';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.podpick.com';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://usepodpick.com';
   const mediaPageUrl = `${appUrl}/m/${client.slug}`;
   const calendarLink = client.bookingLink ?? null;
 

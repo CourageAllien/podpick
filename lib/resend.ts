@@ -16,7 +16,7 @@ if (!process.env.RESEND_API_KEY) {
 }
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'hi@podpick.com';
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'hi@usepodpick.com';
 const FROM_NAME = 'Podpick';
 
 export type OnboardingTemplate =
@@ -102,7 +102,7 @@ export async function sendOnboardingEmail(params: SendOnboardingParams): Promise
     to: user.email,
     subject: content.subject,
     text: content.body,
-    replyTo: 'hi@podpick.com',
+    replyTo: 'hi@usepodpick.com',
   });
 
   if (result.error) {
@@ -258,7 +258,7 @@ Got it. Your VA ${v.vaFirstName} is now:
 
 1. Researching podcasts that fit your angles and audience
 2. Drafting your first 5 pitches (custom for each show)
-3. Setting up your public guest page at podpick.com
+3. Setting up your public guest page at usepodpick.com
 
 Your first pitches go out within 5 business days. You'll get an email the moment they ship.
 
@@ -448,7 +448,7 @@ export async function sendTransactionalEmail(params: {
     to: params.to,
     subject: params.subject,
     text: params.body,
-    replyTo: params.replyTo || 'hi@podpick.com',
+    replyTo: params.replyTo || 'hi@usepodpick.com',
   });
 
   if (result.error) {
