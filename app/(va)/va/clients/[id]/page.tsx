@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { desc, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   clientProfiles,
@@ -9,10 +9,12 @@ import {
   pitches,
   podcasts,
   positiveReplyLifecycle,
+  sendSchedules,
 } from '@/db/schema';
 import { getCurrentUser } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { SendStrategyControl } from './send-strategy-control';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,6 +54,7 @@ export default async function VaClientWorkspacePage({
       intakeCompletedAt: clientProfiles.intakeCompletedAt,
       bookingLink: clientProfiles.bookingLink,
       unipileAccountId: clientProfiles.unipileAccountId,
+      newSendingDomain: clientProfiles.newSendingDomain,
       userName: users.fullName,
       userEmail: users.email,
     })
@@ -113,6 +116,24 @@ export default async function VaClientWorkspacePage({
 
   const angles = (client.angles ?? []) as Array<{ title: string; description: string }>;
 
+  // Current-period send schedule (for the manual-override state).
+  const currentSchedule = sub?.currentPeriodStart
+    ? await db.query.sendSchedules.findFirst({
+        where: and(
+          eq(sendSchedules.clientProfileId, client.id),
+          eq(sendSchedules.periodStart, new Date(sub.currentPeriodStart))
+        ),
+      })
+    : null;
+  const cadence =
+    sub?.tier === 'pro'
+      ? client.newSendingDomain
+        ? [4, 4, 7, 7]
+        : [7, 7, 6, 5]
+      : client.newSendingDomain
+        ? [2, 2, 3, 3]
+        : [3, 3, 2, 2];
+
   return (
     <div className="space-y-8">
       <div>
@@ -133,6 +154,12 @@ export default async function VaClientWorkspacePage({
                 {client.unipileAccountId ? 'Inbox connected' : 'Inbox not connected'}
               </Badge>
             </div>
+            <Link
+              href={`/va/clients/${client.id}/messages`}
+              className="rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-muted"
+            >
+              Messages
+            </Link>
             <Link
               href={`/va/clients/${client.id}/leads`}
               className="rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-muted"
@@ -251,6 +278,21 @@ export default async function VaClientWorkspacePage({
           </CardContent>
         </Card>
       )}
+
+      {/* Send strategy */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Send strategy</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SendStrategyControl
+            clientProfileId={client.id}
+            initialOverride={!!currentSchedule?.manualOverride}
+            cadence={cadence}
+            warmupMode={!!client.newSendingDomain}
+          />
+        </CardContent>
+      </Card>
 
       {/* Pitches */}
       <div className="grid gap-6 lg:grid-cols-2">

@@ -89,6 +89,21 @@ export const planWeekForClient = inngest.createFunction(
       return { skipped: 'intake_not_done' };
     }
 
+    // Respect a VA's manual override: if they've taken the wheel for this period,
+    // the auto-planner stays out of the way and does not regenerate slots.
+    const manualOverride = await step.run('check-manual-override', async () => {
+      const sched = await db.query.sendSchedules.findFirst({
+        where: and(
+          eq(sendSchedules.clientProfileId, clientProfileId),
+          eq(sendSchedules.periodStart, new Date(sub.currentPeriodStart!))
+        ),
+      });
+      return !!sched?.manualOverride;
+    });
+    if (manualOverride) {
+      return { skipped: 'manual_override' };
+    }
+
     // Compute which week of the billing period we're in
     const weekOfPeriod = computeWeekOfPeriod(sub.currentPeriodStart!);
 

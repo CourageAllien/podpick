@@ -124,13 +124,34 @@ export const sendPitch = inngest.createFunction(
       return { failed: 'no_host_email' };
     }
 
-    // Verify quota one more time before sending (race protection)
+    // Verify quota + subscription state one more time before sending
+    // (race protection against a pause/cancel/quota-bump landing after schedule).
     const sub = await step.run('quota-check', async () =>
       db.query.subscriptions.findFirst({
         where: eq(subscriptions.clientProfileId, client.id),
       })
     );
-    if (!sub || sub.pitchesUsedThisPeriod >= sub.monthlyPitchQuota) {
+    if (!sub) {
+      await step.run('mark-failed-no-sub', async () =>
+        db.update(pitches).set({ status: 'failed' }).where(eq(pitches.id, pitchId))
+      );
+      return { failed: 'no_subscription' };
+    }
+
+    // A subscription that has been paused, canceled, or fallen past_due since
+    // scheduling must not fire. We return the pitch to 'queued' and clear its
+    // scheduled time so it can be re-scheduled cleanly when the client is active
+    // again, rather than burning it as 'failed'.
+    if (sub.status === 'paused' || sub.status === 'canceled' || sub.status === 'past_due') {
+      await step.run('hold-inactive-sub', async () =>
+        db.update(pitches)
+          .set({ status: 'queued', sendScheduledFor: null })
+          .where(eq(pitches.id, pitchId))
+      );
+      return { held: `subscription_${sub.status}` };
+    }
+
+    if (sub.pitchesUsedThisPeriod >= sub.monthlyPitchQuota) {
       await step.run('mark-failed-quota', async () =>
         db.update(pitches).set({ status: 'failed' }).where(eq(pitches.id, pitchId))
       );

@@ -6,8 +6,10 @@ import {
   podcasts as podcastsTable,
   positiveReplyLifecycle,
   subscriptions as subscriptionsTable,
+  conversations as conversationsTable,
 } from '@/db/schema';
 import { getCurrentUser, getCurrentClientProfile } from '@/lib/auth';
+import { loadThreadMessages, type ThreadMessage } from '@/app/actions/messages';
 import { Dashboard, type DashboardPitch, type DashboardLead } from './dashboard';
 
 export default async function ClientDashboardPage() {
@@ -61,6 +63,18 @@ export default async function ClientDashboardPage() {
     bookedFor: l.bookedFor ? l.bookedFor.toISOString() : null,
   }));
 
+  // Load the client<->VA conversation thread (created lazily on first message).
+  const conversation = await db.query.conversations.findFirst({
+    where: eq(conversationsTable.clientProfileId, profile.id),
+  });
+  const threadMessages: ThreadMessage[] = conversation
+    ? await loadThreadMessages(conversation.id)
+    : [];
+
+  // This-period send cadence, for the strategy summary.
+  const warmupMode = !!profile.newSendingDomain;
+  const cadence = sendCadence(subscription?.tier ?? null, warmupMode);
+
   return (
     <Dashboard
       name={user.fullName || profile.company || 'there'}
@@ -70,9 +84,19 @@ export default async function ClientDashboardPage() {
       tier={subscription?.tier ?? null}
       quota={subscription?.monthlyPitchQuota ?? null}
       used={subscription?.pitchesUsedThisPeriod ?? 0}
+      subStatus={subscription?.status ?? null}
       unipileConnected={!!profile.unipileAccountId}
+      warmupMode={warmupMode}
+      cadence={cadence}
+      meId={profile.userId}
+      messages={threadMessages}
       pitches={pitches}
       hotLeads={hotLeads}
     />
   );
+}
+
+function sendCadence(tier: string | null, warmup: boolean): number[] {
+  if (tier === 'pro') return warmup ? [4, 4, 7, 7] : [7, 7, 6, 5];
+  return warmup ? [2, 2, 3, 3] : [3, 3, 2, 2];
 }

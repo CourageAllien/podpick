@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { sendLeadResponse } from '@/app/actions/hot-leads';
+import { sendClientMessage, markClientRead, type ThreadMessage } from '@/app/actions/messages';
+import { startUnipileConnect } from '@/app/actions/intake';
+import { MessageThread } from '@/components/message-thread';
 
 export type DashboardPitch = {
   id: string;
@@ -42,7 +45,12 @@ export function Dashboard(props: {
   tier: string | null;
   quota: number | null;
   used: number;
+  subStatus: string | null;
   unipileConnected: boolean;
+  warmupMode: boolean;
+  cadence: number[];
+  meId: string;
+  messages: ThreadMessage[];
   pitches: DashboardPitch[];
   hotLeads: DashboardLead[];
 }) {
@@ -56,6 +64,9 @@ export function Dashboard(props: {
   const trialDaysLeft = props.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(props.trialEndsAt).getTime() - Date.now()) / 86_400_000))
     : null;
+
+  const quotaExhausted = props.quota != null && props.used >= props.quota;
+  const paused = props.subStatus === 'paused';
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,6 +90,20 @@ export function Dashboard(props: {
               Trial active{trialDaysLeft !== null ? ` — ${trialDaysLeft} days left` : ''}.
             </span>{' '}
             Your first pitches go out within 5 business days.
+          </div>
+        )}
+
+        {paused && (
+          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            <span className="font-medium">Your plan is paused.</span> Sending is on hold until you
+            resume. Replies and existing leads stay available. Resume any time from Manage billing.
+          </div>
+        )}
+
+        {!paused && quotaExhausted && (
+          <div className="mt-4 rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm text-stone-700">
+            <span className="font-medium">You have used all {props.quota} pitches this period.</span>{' '}
+            New sends resume when your period rolls over. Follow-ups and replies continue as normal.
           </div>
         )}
 
@@ -119,10 +144,19 @@ export function Dashboard(props: {
 
           {/* MESSAGES */}
           <TabsContent value="messages">
-            <EmptyState
-              title="Messages"
-              body="Async chat with your VA shows up here. Realtime updates arrive in a later release."
-            />
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Async chat with your VA. They reply during working hours. For anything urgent about a
+                hot lead, send the reply from your inbox first, then message here.
+              </p>
+              <MessageThread
+                meId={props.meId}
+                initialMessages={props.messages}
+                send={sendClientMessage}
+                markRead={markClientRead}
+                emptyHint="No messages yet. Ask your VA anything about your pitches or strategy."
+              />
+            </div>
           </TabsContent>
 
           {/* SETTINGS */}
@@ -148,20 +182,56 @@ export function Dashboard(props: {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Media page</CardTitle>
+                  <CardTitle className="text-lg">Sending inbox</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <a className="text-terracotta underline" href={`/m/${props.slug}`} target="_blank" rel="noreferrer">
-                    View your public page
-                  </a>
+                <CardContent className="space-y-3 text-sm">
                   <p>
-                    Sending inbox:{' '}
+                    Status:{' '}
                     {props.unipileConnected ? (
                       <Badge variant="success">Connected</Badge>
                     ) : (
                       <Badge variant="muted">Not connected</Badge>
                     )}
                   </p>
+                  <p className="text-muted-foreground">
+                    {props.unipileConnected
+                      ? 'Pitches and replies send from your own inbox. If sends start failing, reconnect to refresh access.'
+                      : 'Connect your inbox so pitches and replies send from your own address.'}
+                  </p>
+                  <ReconnectInbox connected={props.unipileConnected} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Send strategy</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <p>
+                    Cadence:{' '}
+                    <span className="font-medium">{props.cadence.join('-')}</span> pitches across weeks
+                    1 to 4.
+                  </p>
+                  {props.warmupMode && (
+                    <p className="text-muted-foreground">
+                      <Badge variant="secondary">Warmup</Badge> Your domain is new, so week one starts
+                      gentle and ramps up to protect deliverability.
+                    </p>
+                  )}
+                  <p className="text-muted-foreground">
+                    We send Tuesday through Thursday, mornings, spaced out, so each pitch lands well.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Media page</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <a className="text-terracotta underline" href={`/m/${props.slug}`} target="_blank" rel="noreferrer">
+                    View your public page
+                  </a>
                   <Button variant="outline" size="sm" asChild>
                     <a href="/app/intake">Update intake info</a>
                   </Button>
@@ -289,6 +359,32 @@ function LeadCard({ lead, unipileConnected }: { lead: DashboardLead; unipileConn
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function ReconnectInbox({ connected }: { connected: boolean }) {
+  const [busy, setBusy] = useState(false);
+
+  async function connect(provider: 'GOOGLE' | 'OUTLOOK') {
+    setBusy(true);
+    const res = await startUnipileConnect(provider);
+    setBusy(false);
+    if ('error' in res) {
+      toast.error(res.error);
+      return;
+    }
+    window.location.href = res.url;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button variant="outline" size="sm" disabled={busy} onClick={() => connect('GOOGLE')}>
+        {connected ? 'Reconnect Google' : 'Connect Google'}
+      </Button>
+      <Button variant="outline" size="sm" disabled={busy} onClick={() => connect('OUTLOOK')}>
+        {connected ? 'Reconnect Outlook' : 'Connect Outlook'}
+      </Button>
+    </div>
   );
 }
 
