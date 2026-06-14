@@ -134,6 +134,12 @@ export default async function VaClientWorkspacePage({
               </Badge>
             </div>
             <Link
+              href={`/va/clients/${client.id}/review`}
+              className="rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-muted"
+            >
+              Review pitches
+            </Link>
+            <Link
               href={`/va/clients/${client.id}/chat`}
               className="rounded-md bg-terracotta px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
             >
