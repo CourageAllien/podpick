@@ -19,7 +19,7 @@ import { inngest } from '../client';
 import { sendEmail as sendViaUnipile } from '@/lib/unipile';
 import { db } from '@/db';
 import { pitches, sendEvents, clientProfiles, podcasts, subscriptions } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, count } from 'drizzle-orm';
 
 // ───────────────────────────────────────────────────────────────
 // SCHEDULE — assign a send time respecting cadence rules
@@ -191,6 +191,23 @@ export const sendPitch = inngest.createFunction(
       name: 'pitch.sent',
       data: { pitchId },
     });
+
+    // If this is the very first pitch ever sent for this client, fire the
+    // onboarding "first pitches sent" email. We count AFTER mark-sent, so a
+    // count of exactly 1 means the pitch we just sent is the first.
+    const sentSoFar = await step.run('count-sent', async () => {
+      const [row] = await db
+        .select({ value: count() })
+        .from(pitches)
+        .where(and(eq(pitches.clientProfileId, client.id), eq(pitches.status, 'sent')));
+      return row?.value ?? 0;
+    });
+    if (sentSoFar === 1) {
+      await step.sendEvent('emit-first-pitches-sent', {
+        name: 'client.first_pitches_sent',
+        data: { clientProfileId: client.id, pitchIds: [pitchId] },
+      });
+    }
 
     // Schedule the Step 1 follow-up at +4 days (next Tue/Wed/Thu after that)
     if (pitch.step === 'step1') {

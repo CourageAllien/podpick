@@ -30,6 +30,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Link className="rounded-md px-3 py-1.5 hover:bg-muted" href="/admin/vas">
                 VAs
               </Link>
+              <Link className="rounded-md px-3 py-1.5 hover:bg-muted" href="/admin/training">
+                Training
+              </Link>
             </nav>
           </div>
           <form action="/auth/signout" method="post">
