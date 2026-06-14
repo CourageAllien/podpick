@@ -46,6 +46,7 @@ export async function middleware(request: NextRequest) {
     path.startsWith('/auth') ||
     path.startsWith('/api/stripe/webhooks') ||
     path.startsWith('/api/unipile/webhook') ||
+    path.startsWith('/api/unipile/reply') ||
     path.startsWith('/api/inngest') ||
     path.startsWith('/_next') ||
     path.startsWith('/static');
