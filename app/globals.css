@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cream background, warm ink foreground, terracotta primary */
+    --background: 33 43% 96%; /* #FAF6F0 cream */
+    --foreground: 20 14% 16%;
+
+    --card: 33 43% 98%;
+    --card-foreground: 20 14% 16%;
+
+    --popover: 33 43% 98%;
+    --popover-foreground: 20 14% 16%;
+
+    --primary: 18 53% 54%; /* #C76F4E terracotta */
+    --primary-foreground: 33 43% 98%;
+
+    --secondary: 30 25% 90%;
+    --secondary-foreground: 20 14% 16%;
+
+    --muted: 30 22% 91%;
+    --muted-foreground: 20 8% 42%;
+
+    --accent: 30 25% 88%;
+    --accent-foreground: 20 14% 16%;
+
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 33 43% 98%;
+
+    --border: 30 18% 84%;
+    --input: 30 18% 84%;
+    --ring: 18 53% 54%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 20 14% 10%;
+    --foreground: 33 43% 96%;
+
+    --card: 20 14% 13%;
+    --card-foreground: 33 43% 96%;
+
+    --popover: 20 14% 13%;
+    --popover-foreground: 33 43% 96%;
+
+    --primary: 18 53% 54%;
+    --primary-foreground: 20 14% 10%;
+
+    --secondary: 20 10% 20%;
+    --secondary-foreground: 33 43% 96%;
+
+    --muted: 20 10% 20%;
+    --muted-foreground: 30 10% 65%;
+
+    --accent: 20 10% 24%;
+    --accent-foreground: 33 43% 96%;
+
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 33 43% 96%;
+
+    --border: 20 10% 24%;
+    --input: 20 10% 24%;
+    --ring: 18 53% 54%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}

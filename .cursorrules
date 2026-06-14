@@ -1,0 +1,99 @@
+# PodPick v3 — Cursor Rules
+
+You are working on PodPick, the internal app powering PodEngine (managed podcast pitching for bootstrapped SaaS founders).
+
+Read CLAUDE.md at session start for full project context.
+
+## Hard constraints
+
+- Use Next.js 15 App Router patterns (server components default; mark client components explicitly)
+- Drizzle ORM only — never raw SQL except in migrations
+- Tailwind + shadcn/ui only — no other UI libraries
+- TypeScript strict mode — no `any` without explicit reason in a comment
+- Server actions for mutations (not API routes) unless there's a specific reason
+- Anthropic SDK with model `claude-sonnet-4-5` for both pitch writer and agent
+
+## Architectural conventions
+
+### File organization
+- App routes: `app/(public|client|va|admin)/...`
+- Server actions: `app/actions/*.ts` or co-located `_actions.ts`
+- DB queries: import `db` from `@/db` directly in server code
+- Agent tools: `lib/agent/tools/<tool-name>.ts` (one file per tool)
+- Inngest functions: `inngest/functions/<feature>.ts`
+- Email templates: inline in `lib/resend.ts` (move to `lib/email-templates/` if file > 500 lines)
+- Stripe handlers: `lib/stripe.ts` for shared, `app/api/stripe/webhooks/route.ts` for endpoint
+
+### Module boundaries
+- `lib/anthropic.ts` — pitch writer ONLY (single-shot generation with step parameter)
+- `lib/agent/orchestrator.ts` — agent loop (multi-turn with tool use)
+- `lib/unipile.ts` — Unipile API wrapper (no business logic)
+- `lib/rephonic.ts` — Rephonic API wrapper with caching (no business logic)
+- `lib/resend.ts` — Resend wrapper + onboarding email templates (idempotent sends)
+- `inngest/functions/*` — all background jobs (no synchronous business logic here)
+
+### Two-step pitch system rules
+- `generate_pitches` REQUIRES `step` parameter — never default it silently
+- Step 2 pitches REQUIRE `host_personal_context_id` — fail loudly if missing
+- Validate Step 1 max 90 words / Step 2 max 110 words in `lib/anthropic.ts` validateOutput
+- Never mix Step 1 and Step 2 frameworks in same generation
+
+### Send pipeline rules
+- Never bypass the Inngest send pipeline — direct Unipile calls forbidden outside `inngest/functions/send-pitches.ts`
+- Day-of-week + time-of-day enforcement happens in `computeNextSendSlot` — don't replicate logic elsewhere
+- Quota check ALWAYS happens at send-time (race protection), even if checked earlier
+
+### Onboarding email rules
+- Always send via `sendOnboardingEmail()` (relies on idempotency)
+- Never call Resend directly for onboarding emails
+- New templates require: enum addition in schema, body in resend.ts, Inngest trigger
+
+## Forbidden patterns
+
+- Direct fetch to Anthropic API — use `lib/anthropic.ts` or agent orchestrator
+- Hardcoded Stripe price IDs — load from `env`
+- Cross-client data access in non-admin routes — must filter by `client_profile_id`
+- Sending pitches outside the Inngest pipeline
+- Em dashes anywhere in pitch copy, marketing copy, or onboarding emails
+- The word "AI" in external-facing copy (landing page, onboarding emails, dashboard help text)
+- Modifying `base-prompt-v1.ts` — create v2 or v3 variants instead
+- `// TODO` comments without an associated GitHub issue
+- React Server Components calling client-only APIs (e.g., `localStorage`)
+
+## Style preferences
+
+- Direct, dense, insight-first comments — no docstring fluff
+- Use `???` to mark genuine uncertainty that needs human review
+- Prefer explicit names over short aliases (`clientProfile` over `cp`)
+- Drizzle: prefer `db.query.<table>.findFirst()` over manually-written select-where chains
+- Server components: do data loading at top of file, then return JSX
+
+## Testing
+
+- No unit tests required for MVP (pace > coverage)
+- Integration tests for: Stripe webhook handlers, Inngest send pipeline, agent tool executor
+- Manual QA checklist lives in `docs/qa-checklist.md` (created in week 10)
+
+## Migrations
+
+- All schema changes via Drizzle Kit (`pnpm drizzle-kit generate`)
+- Never run `db push` against production
+- Migration files are reviewed before merge
+
+## Environment
+
+- Local: `pnpm dev` + `pnpm inngest:dev` (Inngest dev server) + Supabase local or remote
+- Staging: Vercel preview + Supabase staging project + Inngest cloud (preview branch)
+- Production: Vercel production + Supabase production + Inngest cloud (main branch)
+
+## When asked to do something ambiguous
+
+Ask before implementing. Don't guess on:
+- Pricing logic
+- Quota math
+- Email content (always check `lib/resend.ts` templates)
+- Cadence rules (check `podengine-send-strategy.md`)
+- Pitch copy structure (check `podengine-pitch-templates.md`)
+- ICP qualification logic (check `podengine-icp-analysis.md`)
+
+If the answer is in a doc, point me there and ask which behavior I want.
