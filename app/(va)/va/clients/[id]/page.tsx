@@ -124,13 +124,21 @@ export default async function VaClientWorkspacePage({
             <h1 className="font-serif text-3xl">{client.company || client.userName || 'Client'}</h1>
             <p className="text-sm text-muted-foreground">{client.userEmail}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={client.status === 'active' ? 'success' : 'secondary'}>
-              {client.status}
-            </Badge>
-            <Badge variant={client.unipileAccountId ? 'success' : 'muted'}>
-              {client.unipileAccountId ? 'Inbox connected' : 'Inbox not connected'}
-            </Badge>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Badge variant={client.status === 'active' ? 'success' : 'secondary'}>
+                {client.status}
+              </Badge>
+              <Badge variant={client.unipileAccountId ? 'success' : 'muted'}>
+                {client.unipileAccountId ? 'Inbox connected' : 'Inbox not connected'}
+              </Badge>
+            </div>
+            <Link
+              href={`/va/clients/${client.id}/chat`}
+              className="rounded-md bg-terracotta px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+            >
+              Research assistant
+            </Link>
           </div>
         </div>
         <p className="mt-2 text-xs uppercase tracking-wide text-muted-foreground">Read-only view</p>
