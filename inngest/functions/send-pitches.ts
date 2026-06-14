@@ -245,6 +245,46 @@ export const sendPitch = inngest.createFunction(
 );
 
 // ───────────────────────────────────────────────────────────────
+// RECONCILE — re-queue pitches that were held during a billing lapse
+// ───────────────────────────────────────────────────────────────
+
+/**
+ * When a subscription recovers (a failed renewal finally clears), any pitches
+ * the send guard parked back in 'queued' during the lapse are sitting idle with
+ * no scheduled time. This re-emits pitch.queued_for_send for each so they pick
+ * up a fresh send slot. Safe to run repeatedly: schedulePitchSend ignores any
+ * pitch that is no longer 'queued', so already-rescheduled pitches are skipped.
+ */
+export const reconcileHeldPitches = inngest.createFunction(
+  { id: 'reconcile-held-pitches', name: 'Send: reconcile held pitches' },
+  { event: 'client.payment_recovered' },
+  async ({ event, step }) => {
+    const { clientProfileId } = event.data;
+
+    const held = await step.run('load-held-pitches', async () =>
+      db
+        .select({ id: pitches.id })
+        .from(pitches)
+        .where(
+          and(
+            eq(pitches.clientProfileId, clientProfileId),
+            eq(pitches.status, 'queued')
+          )
+        )
+    );
+
+    for (const p of held) {
+      await step.sendEvent(`requeue-${p.id}`, {
+        name: 'pitch.queued_for_send',
+        data: { pitchId: p.id },
+      });
+    }
+
+    return { requeued: held.length };
+  }
+);
+
+// ───────────────────────────────────────────────────────────────
 // SCHEDULING HELPERS
 // ───────────────────────────────────────────────────────────────
 
@@ -291,4 +331,4 @@ function computeFollowupSlot(originalSend: Date): Date {
   return computeNextSendSlot(target);
 }
 
-export const SEND_PIPELINE_FUNCTIONS = [schedulePitchSend, sendPitch];
+export const SEND_PIPELINE_FUNCTIONS = [schedulePitchSend, sendPitch, reconcileHeldPitches];
