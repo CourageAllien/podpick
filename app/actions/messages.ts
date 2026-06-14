@@ -42,6 +42,28 @@ async function getOrCreateConversation(clientProfileId: string, vaId: string | n
 // ───────────────────────────────────────────────────────────────
 
 export async function loadThreadMessages(conversationId: string): Promise<ThreadMessage[]> {
+  // This is an exported server action, so it is a public endpoint: never trust
+  // the conversationId alone. Confirm the caller actually belongs to this thread
+  // (owning client, an admin, or the VA assigned to the client) before returning
+  // any messages. On any failure we return an empty thread rather than leak.
+  const me = await getCurrentUser();
+  if (!me) return [];
+
+  const convo = await db.query.conversations.findFirst({
+    where: eq(conversations.id, conversationId),
+  });
+  if (!convo) return [];
+
+  if (me.role !== 'admin') {
+    const client = await db.query.clientProfiles.findFirst({
+      where: eq(clientProfiles.id, convo.clientProfileId),
+    });
+    if (!client) return [];
+    const isOwningClient = me.role === 'client' && client.userId === me.id;
+    const isAssignedVa = me.role === 'va' && client.assignedVaId === me.id;
+    if (!isOwningClient && !isAssignedVa) return [];
+  }
+
   const rows = await db
     .select()
     .from(messages)
