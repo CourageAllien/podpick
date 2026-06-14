@@ -4,6 +4,8 @@ import {
   stripe,
   handleCheckoutCompleted,
   handleSubscriptionUpdated,
+  handleInvoicePaymentFailed,
+  handleInvoicePaymentSucceeded,
   resetQuotaOnPeriodRollover,
 } from '@/lib/stripe';
 
@@ -56,6 +58,14 @@ export async function POST(request: NextRequest) {
         }
         break;
       }
+
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        break;
+
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
+        break;
 
       default:
         // Unhandled event types are acknowledged so Stripe stops retrying.

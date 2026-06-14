@@ -6,6 +6,7 @@ import { FOLLOWUP_FUNCTIONS } from '@/inngest/functions/send-pitch-followup';
 import { WEEKLY_PLAN_FUNCTIONS } from '@/inngest/functions/weekly-pitch-plan';
 import { MONTHLY_RECAP_FUNCTIONS } from '@/inngest/functions/monthly-recap';
 import { RESPONSE_FUNCTIONS } from '@/inngest/functions/classify-response';
+import { DUNNING_FUNCTIONS } from '@/inngest/functions/dunning-emails';
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -16,5 +17,6 @@ export const { GET, POST, PUT } = serve({
     ...WEEKLY_PLAN_FUNCTIONS,
     ...MONTHLY_RECAP_FUNCTIONS,
     ...RESPONSE_FUNCTIONS,
+    ...DUNNING_FUNCTIONS,
   ],
 });

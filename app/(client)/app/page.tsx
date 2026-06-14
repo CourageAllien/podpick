@@ -85,6 +85,8 @@ export default async function ClientDashboardPage() {
       quota={subscription?.monthlyPitchQuota ?? null}
       used={subscription?.pitchesUsedThisPeriod ?? 0}
       subStatus={subscription?.status ?? null}
+      cancelAtPeriodEnd={!!subscription?.cancelAtPeriodEnd}
+      periodEnd={subscription?.currentPeriodEnd ? subscription.currentPeriodEnd.toISOString() : null}
       unipileConnected={!!profile.unipileAccountId}
       warmupMode={warmupMode}
       cadence={cadence}

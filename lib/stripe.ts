@@ -144,6 +144,7 @@ export async function handleSubscriptionUpdated(
       currentPeriodStart: new Date(sub.current_period_start * 1000),
       currentPeriodEnd: new Date(sub.current_period_end * 1000),
       canceledAt: sub.canceled_at ? new Date(sub.canceled_at * 1000) : null,
+      cancelAtPeriodEnd: sub.cancel_at_period_end ?? false,
       updatedAt: new Date(),
     })
     .where(eq(subscriptions.stripeSubscriptionId, sub.id));
@@ -170,6 +171,83 @@ export async function handleSubscriptionUpdated(
       data: { clientProfileId: existing.clientProfileId },
     });
   }
+}
+
+// ───────────────────────────────────────────────────────────────
+// DUNNING — failed payment + recovery
+// ───────────────────────────────────────────────────────────────
+
+/**
+ * A renewal charge failed. Stripe's smart retries keep attempting payment, so
+ * our job is to mark the subscription past_due and emit a dunning event so the
+ * client gets a heads-up email escalating with each attempt. We never cut off
+ * service here — that happens only when Stripe finally cancels the sub, which
+ * arrives via customer.subscription.updated/deleted.
+ */
+export async function handleInvoicePaymentFailed(
+  invoice: Stripe.Invoice
+): Promise<void> {
+  const stripeSubscriptionId =
+    typeof invoice.subscription === 'string'
+      ? invoice.subscription
+      : invoice.subscription?.id;
+  if (!stripeSubscriptionId) return;
+
+  const existing = await db.query.subscriptions.findFirst({
+    where: eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId),
+  });
+  if (!existing) return;
+
+  await db.update(subscriptions)
+    .set({ status: 'past_due', updatedAt: new Date() })
+    .where(eq(subscriptions.id, existing.id));
+
+  await inngest.send({
+    name: 'client.payment_failed',
+    data: {
+      clientProfileId: existing.clientProfileId,
+      attemptCount: invoice.attempt_count ?? 1,
+      nextAttemptAt: invoice.next_payment_attempt
+        ? new Date(invoice.next_payment_attempt * 1000).toISOString()
+        : null,
+    },
+  });
+}
+
+/**
+ * A previously failed invoice was paid (retry succeeded or card updated). Lift
+ * the past_due flag back to active and let the client know service continues.
+ */
+export async function handleInvoicePaymentSucceeded(
+  invoice: Stripe.Invoice
+): Promise<void> {
+  const stripeSubscriptionId =
+    typeof invoice.subscription === 'string'
+      ? invoice.subscription
+      : invoice.subscription?.id;
+  if (!stripeSubscriptionId) return;
+
+  const existing = await db.query.subscriptions.findFirst({
+    where: eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId),
+  });
+  if (!existing) return;
+
+  // Only act on recovery from a dunning state — normal renewals are handled
+  // by resetQuotaOnPeriodRollover via invoice.paid.
+  if (existing.status !== 'past_due') return;
+
+  await db.update(subscriptions)
+    .set({ status: 'active', updatedAt: new Date() })
+    .where(eq(subscriptions.id, existing.id));
+
+  await db.update(clientProfiles)
+    .set({ status: 'active', updatedAt: new Date() })
+    .where(eq(clientProfiles.id, existing.clientProfileId));
+
+  await inngest.send({
+    name: 'client.payment_recovered',
+    data: { clientProfileId: existing.clientProfileId },
+  });
 }
 
 // ───────────────────────────────────────────────────────────────

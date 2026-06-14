@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { sendLeadResponse } from '@/app/actions/hot-leads';
 import { sendClientMessage, markClientRead, type ThreadMessage } from '@/app/actions/messages';
 import { startUnipileConnect } from '@/app/actions/intake';
+import { cancelAtPeriodEnd, reactivateSubscription } from '@/app/actions/billing';
 import { MessageThread } from '@/components/message-thread';
 
 export type DashboardPitch = {
@@ -46,6 +47,8 @@ export function Dashboard(props: {
   quota: number | null;
   used: number;
   subStatus: string | null;
+  cancelAtPeriodEnd: boolean;
+  periodEnd: string | null;
   unipileConnected: boolean;
   warmupMode: boolean;
   cadence: number[];
@@ -166,7 +169,7 @@ export function Dashboard(props: {
                 <CardHeader>
                   <CardTitle className="text-lg">Plan</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
+                <CardContent className="space-y-3 text-sm">
                   <p>
                     Tier: <span className="font-medium">{props.tier ?? 'trial'}</span>
                   </p>
@@ -178,6 +181,11 @@ export function Dashboard(props: {
                       Manage billing
                     </a>
                   </Button>
+                  <PlanControls
+                    cancelAtPeriodEnd={props.cancelAtPeriodEnd}
+                    periodEnd={props.periodEnd}
+                    subStatus={props.subStatus}
+                  />
                 </CardContent>
               </Card>
               <Card>
@@ -385,6 +393,104 @@ function ReconnectInbox({ connected }: { connected: boolean }) {
         {connected ? 'Reconnect Outlook' : 'Connect Outlook'}
       </Button>
     </div>
+  );
+}
+
+function PlanControls({
+  cancelAtPeriodEnd: scheduledToCancel,
+  periodEnd,
+  subStatus,
+}: {
+  cancelAtPeriodEnd: boolean;
+  periodEnd: string | null;
+  subStatus: string | null;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  // Nothing to cancel if it is already gone.
+  if (subStatus === 'canceled') {
+    return (
+      <p className="text-xs text-muted-foreground">
+        Your subscription has ended. We would love to have you back any time.
+      </p>
+    );
+  }
+
+  const endLabel = periodEnd
+    ? new Date(periodEnd).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })
+    : 'the end of your current period';
+
+  function doCancel() {
+    startTransition(async () => {
+      const res = await cancelAtPeriodEnd();
+      if ('error' in res) {
+        toast.error(res.error);
+        return;
+      }
+      setConfirming(false);
+      toast.success(`Cancellation scheduled. You stay active until ${endLabel}.`);
+    });
+  }
+
+  function doReactivate() {
+    startTransition(async () => {
+      const res = await reactivateSubscription();
+      if ('error' in res) {
+        toast.error(res.error);
+        return;
+      }
+      toast.success('Welcome back. Your subscription will continue.');
+    });
+  }
+
+  if (scheduledToCancel) {
+    return (
+      <div className="space-y-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-xs">
+        <p className="font-medium text-amber-900">
+          Your plan is set to end on {endLabel}.
+        </p>
+        <p className="text-amber-800">
+          You will keep full access until then. Changed your mind? You can keep your pitching
+          going with one click.
+        </p>
+        <Button size="sm" variant="default" disabled={isPending} onClick={doReactivate}>
+          Keep my plan
+        </Button>
+      </div>
+    );
+  }
+
+  if (confirming) {
+    return (
+      <div className="space-y-2 rounded-md border p-3 text-xs">
+        <p className="font-medium">Before you go</p>
+        <p className="text-muted-foreground">
+          Booked shows often come from the follow-ups that land weeks after the first pitch.
+          Cancelling now stops new pitches going out. You will keep access until {endLabel}, and
+          you can come back any time. Want us to pause instead, or take a look at your strategy
+          together? Just message your team.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <Button size="sm" variant="outline" disabled={isPending} onClick={() => setConfirming(false)}>
+            Never mind
+          </Button>
+          <Button size="sm" variant="destructive" disabled={isPending} onClick={doCancel}>
+            Cancel at period end
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className="text-xs text-muted-foreground underline hover:text-foreground"
+      onClick={() => setConfirming(true)}
+    >
+      Cancel subscription
+    </button>
   );
 }
 

@@ -167,6 +167,10 @@ export const subscriptions = pgTable('subscriptions', {
   trialEndsAt: timestamp('trial_ends_at', { withTimezone: true }),
   canceledAt: timestamp('canceled_at', { withTimezone: true }),
 
+  // Client scheduled a cancellation that takes effect at period end. Service
+  // continues until currentPeriodEnd; Stripe flips status to canceled then.
+  cancelAtPeriodEnd: boolean('cancel_at_period_end').notNull().default(false),
+
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({

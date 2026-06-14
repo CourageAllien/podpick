@@ -45,6 +45,14 @@ export type AppEvents = {
     data: { clientProfileId: string; stage: 30 | 60 | 90 };
   };
 
+  // Billing / dunning
+  'client.payment_failed': {
+    data: { clientProfileId: string; attemptCount: number; nextAttemptAt: string | null };
+  };
+  'client.payment_recovered': {
+    data: { clientProfileId: string };
+  };
+
   // Send pipeline
   'pitch.queued_for_send': {
     data: { pitchId: string };
