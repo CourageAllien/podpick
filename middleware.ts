@@ -43,6 +43,7 @@ export async function middleware(request: NextRequest) {
   const isPublic =
     path === '/' ||
     path.startsWith('/m/') ||
+    path.startsWith('/samples/') ||
     path.startsWith('/auth') ||
     path.startsWith('/api/stripe/webhooks') ||
     path.startsWith('/api/unipile/webhook') ||
