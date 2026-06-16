@@ -34,9 +34,7 @@ That is the exact mess OpsBrain was built to clean up. We work with OpsBrain, th
 
 Would you be interested in learning more about OpsBrain's founder as a potential guest?
 
-Alex
-
-PS: [pull a specific detail from a recent episode or the host's own post]`,
+Alex`,
   },
   {
     client: 'Twogeder',
@@ -48,9 +46,7 @@ That is the entire premise of Twogeder, a client of ours. They build referral-pa
 
 Would you be interested in learning more about Twogeder's founder as a potential guest?
 
-Alex
-
-PS: [reference a recent guest or a running theme on the show]`,
+Alex`,
   },
 ];
 
