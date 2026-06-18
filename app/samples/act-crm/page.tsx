@@ -223,7 +223,7 @@ He holds a bachelor's degree from McMaster University, an MBA from the Universit
         </div>
 
         <footer className="mt-16 border-t border-stone-200 pt-6 text-center font-mono text-xs text-stone-400">
-          Powered by Podpick
+          Powered by PodEngine
         </footer>
       </div>
     </main>

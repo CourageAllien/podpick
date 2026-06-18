@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
  *
  * Two halves:
  *  1. Public-facing media kit (the one-pager a host would see), mirroring the
- *     /m/[slug] design so it reads as a native Podpick guest profile.
+ *     /m/[slug] design so it reads as a native PodEngine guest profile.
  *  2. Internal booking strategy — two recommended shows with rationale, and the
  *     two customized outreach pitches, written to the house outreach framework.
  *
@@ -225,7 +225,7 @@ With over thirty years of combined experience and a background that runs through
         </div>
 
         <footer className="mt-16 border-t border-stone-200 pt-6 text-center font-mono text-xs text-stone-400">
-          Powered by Podpick
+          Powered by PodEngine
         </footer>
       </div>
     </main>

@@ -235,7 +235,7 @@ AMZTailored runs the full Amazon stack for its clients, account management, adve
         </div>
 
         <footer className="mt-16 border-t border-stone-200 pt-6 text-center font-mono text-xs text-stone-400">
-          Powered by Podpick
+          Powered by PodEngine
         </footer>
       </div>
     </main>

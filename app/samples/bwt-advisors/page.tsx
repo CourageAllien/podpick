@@ -223,7 +223,7 @@ She specializes in serving entrepreneurs and small and mid-sized business owners
         </div>
 
         <footer className="mt-16 border-t border-stone-200 pt-6 text-center font-mono text-xs text-stone-400">
-          Powered by Podpick
+          Powered by PodEngine
         </footer>
       </div>
     </main>

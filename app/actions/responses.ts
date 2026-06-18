@@ -178,7 +178,7 @@ Review, edit, and send it here:
 ${appUrl}/app/leads/${lifecycle.id}
 
 Thanks,
-The Podpick team`;
+The PodEngine team`;
 
   const sent = await sendTransactionalEmail({
     to: user.email,

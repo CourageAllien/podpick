@@ -83,7 +83,7 @@ export async function buildSystemPrompt(clientProfileId: string): Promise<string
   const periodEnd = sub?.currentPeriodEnd?.toISOString().slice(0, 10) ?? 'n/a';
   const step2EligibleCount = await countStep2Eligible(clientProfileId);
 
-  return `You are an operations assistant for Podpick, a managed podcast pitching service for bootstrapped SaaS founders.
+  return `You are an operations assistant for PodEngine, a managed podcast pitching service for bootstrapped SaaS founders.
 
 ═══════════════════════════════════════════════════════════
 ACTIVE CLIENT CONTEXT

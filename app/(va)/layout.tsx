@@ -16,7 +16,7 @@ export default async function VaLayout({ children }: { children: React.ReactNode
       <header className="border-b bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/va" className="font-serif text-xl">
-            Podpick <span className="text-terracotta">VA</span>
+            PodEngine <span className="text-terracotta">VA</span>
           </Link>
           <form action="/auth/signout" method="post">
             <Button variant="ghost" size="sm" type="submit">

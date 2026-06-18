@@ -2,7 +2,7 @@
  * PodPick — Resend wrapper for transactional + onboarding emails
  *
  * Handles the 9 trial onboarding emails + 3 win-back emails defined in
- * Podpick-onboarding-emails.md. Each email is idempotent via the
+ * PodEngine-onboarding-emails.md. Each email is idempotent via the
  * onboarding_email_sends table (unique constraint on client+template).
  */
 
@@ -17,7 +17,7 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'hi@usepodpick.com';
-const FROM_NAME = 'Podpick';
+const FROM_NAME = 'PodEngine';
 
 export type OnboardingTemplate =
   | 'welcome'
@@ -125,7 +125,7 @@ export async function sendOnboardingEmail(params: SendOnboardingParams): Promise
 
 // ───────────────────────────────────────────────────────────────
 // EMAIL CONTENT — implements the 9-email trial flow
-// (Full copy lives in Podpick-onboarding-emails.md; these are the templates)
+// (Full copy lives in PodEngine-onboarding-emails.md; these are the templates)
 // ───────────────────────────────────────────────────────────────
 
 function buildEmailContent(
@@ -135,7 +135,7 @@ function buildEmailContent(
   switch (template) {
     case 'welcome':
       return {
-        subject: `Welcome to Podpick, ${v.name}. Here's what's next.`,
+        subject: `Welcome to PodEngine, ${v.name}. Here's what's next.`,
         body: WELCOME_BODY(v),
       };
     case 'intake_nudge':
@@ -160,7 +160,7 @@ function buildEmailContent(
       };
     case 'mid_trial_checkin':
       return {
-        subject: `How's Podpick treating you so far?`,
+        subject: `How's PodEngine treating you so far?`,
         body: MID_TRIAL_CHECKIN_BODY(v),
       };
     case 'trial_converting_tomorrow':
@@ -185,7 +185,7 @@ function buildEmailContent(
       };
     case 'winback_30':
       return {
-        subject: `${v.name}, one quick thing about your old Podpick setup`,
+        subject: `${v.name}, one quick thing about your old PodEngine setup`,
         body: WINBACK_30_BODY(v),
       };
     case 'winback_60':
@@ -201,7 +201,7 @@ function buildEmailContent(
   }
 }
 
-// Body templates — full copy in Podpick-onboarding-emails.md
+// Body templates — full copy in PodEngine-onboarding-emails.md
 // These are condensed inline; expand or move to /lib/email-templates/ in production
 
 const WELCOME_BODY = (v: any) => `Hi ${v.name},
@@ -222,7 +222,7 @@ We've already pre-assigned your VA based on your ${v.tier} tier. They'll introdu
 If anything's unclear, hit reply. We answer every email within 24 hours.
 
 Courage
-Founder, Podpick`;
+Founder, PodEngine`;
 
 const INTAKE_NUDGE_BODY = (v: any) => `Hi ${v.name},
 
@@ -269,7 +269,7 @@ Meanwhile, your dashboard is live:
 You can message ${v.vaFirstName} directly from there if anything comes up.
 
 ${v.vaFirstName}
-Podpick`;
+PodEngine`;
 
 const FIRST_PITCHES_SENT_BODY = (v: any) => `Hi ${v.name},
 
@@ -322,7 +322,7 @@ ${v.vaFirstName}`;
 
 const WELCOME_PAID_BODY = (v: any) => `Hi ${v.name},
 
-Your subscription just renewed. Welcome to Podpick proper.
+Your subscription just renewed. Welcome to PodEngine proper.
 
 Here's what to expect:
 
@@ -361,7 +361,7 @@ Courage`;
 
 const FIRST_MONTH_BODY = (v: any) => `Hi ${v.name},
 
-You've been with Podpick for a month. Quick numbers:
+You've been with PodEngine for a month. Quick numbers:
 
 - ${v.pitchCount || '[X]'} total pitches sent
 - ${v.podcastCount || '[Y]'} podcasts targeted
@@ -378,7 +378,7 @@ ${v.vaFirstName}`;
 
 const WINBACK_30_BODY = (v: any) => `Hi ${v.name},
 
-It's been a month since you stepped away from Podpick. Two things worth knowing:
+It's been a month since you stepped away from PodEngine. Two things worth knowing:
 
 1. Your media page at ${v.mediaPageUrl} is still live. We haven't taken it down.
 
@@ -408,7 +408,7 @@ const WINBACK_90_BODY = (v: any) => `Hi ${v.name},
 
 This is the last email I'll send. After this, you're off the list.
 
-If Podpick ever fits your roadmap again, here's the trial link:
+If PodEngine ever fits your roadmap again, here's the trial link:
 → ${v.trialUrl}
 
 Thanks for trying us out the first time.

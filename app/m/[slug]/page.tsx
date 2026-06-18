@@ -148,7 +148,7 @@ export default async function MediaPage({ params }: { params: Promise<{ slug: st
         )}
 
         <footer className="mt-16 border-t border-stone-200 pt-6 text-center font-mono text-xs text-stone-400">
-          Powered by Podpick
+          Powered by PodEngine
         </footer>
       </div>
     </main>

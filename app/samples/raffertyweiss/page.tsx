@@ -18,7 +18,7 @@ import type { Metadata } from 'next';
  */
 
 export const metadata: Metadata = {
-  title: 'RaffertyWeiss × Podpick | Your three questions, answered',
+  title: 'RaffertyWeiss × PodEngine | Your three questions, answered',
   description:
     'Pitch examples, a target list built for federal, nonprofit, and association decision-makers, and exactly what is included at $99/month.',
 };
@@ -260,7 +260,7 @@ export default function RaffertyWeissSamplePage() {
         </section>
 
         <footer className="mt-16 border-t border-stone-200 pt-6 text-center font-mono text-xs text-stone-400">
-          Powered by Podpick
+          Powered by PodEngine
         </footer>
       </div>
     </main>
