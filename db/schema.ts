@@ -626,8 +626,38 @@ export const monthlyRecaps = pgTable('monthly_recaps', {
 }));
 
 // ───────────────────────────────────────────────────────────────
+// INTAKE_SUBMISSIONS — public intake form (pre-account)
+// Captures everything we need to build a media kit, media page, pick
+// shows, and write pitches. Stored before a client_profile exists; the
+// team converts a submission into a profile inside the app.
+// ───────────────────────────────────────────────────────────────
+
+export const intakeSubmissions = pgTable('intake_submissions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+
+  // Indexed essentials for the inbox view
+  fullName: text('full_name').notNull(),
+  email: text('email').notNull(),
+  company: text('company'),
+  website: text('website'),
+
+  // Full structured answer set, keyed by the form field name
+  answers: jsonb('answers').$type<Record<string, string>>().notNull(),
+
+  status: text('status').notNull().default('new'), // new | reviewed | converted | archived
+
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  emailIdx: index('intake_submissions_email_idx').on(t.email),
+  createdIdx: index('intake_submissions_created_idx').on(t.createdAt),
+}));
+
+// ───────────────────────────────────────────────────────────────
 // TYPE EXPORTS
 // ───────────────────────────────────────────────────────────────
+
+export type IntakeSubmission = typeof intakeSubmissions.$inferSelect;
+export type NewIntakeSubmission = typeof intakeSubmissions.$inferInsert;
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

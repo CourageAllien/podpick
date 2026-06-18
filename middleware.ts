@@ -9,6 +9,12 @@ import { NextResponse, type NextRequest } from 'next/server';
  *  - unauth → marketing routes + auth routes only
  */
 export async function middleware(request: NextRequest) {
+  // Serve the intake form at the root of the intake.* subdomain.
+  const host = request.headers.get('host') || '';
+  if (host.startsWith('intake.') && request.nextUrl.pathname === '/') {
+    return NextResponse.rewrite(new URL('/intake', request.url));
+  }
+
   let response = NextResponse.next({ request: { headers: request.headers } });
 
   const supabase = createServerClient(
@@ -42,6 +48,7 @@ export async function middleware(request: NextRequest) {
   // Public routes always permitted
   const isPublic =
     path === '/' ||
+    path.startsWith('/intake') ||
     path.startsWith('/m/') ||
     path.startsWith('/samples/') ||
     path.startsWith('/auth') ||
